@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# 環境変数・秘密情報（どの階層でも除外）
+.env
+.env.*
+!.env.example
+
+# エディタ・ツールのローカル設定
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.claude/
