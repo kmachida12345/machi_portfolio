@@ -1,0 +1,7 @@
+ktor:
+  deployment:
+    port: 8080
+  application:
+    modules:
+      - io.github.kmachida12345.SerializationKt.configureSerialization
+      - io.github.kmachida12345.RoutingKt.configureRouting
