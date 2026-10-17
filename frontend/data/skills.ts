@@ -1,13 +1,13 @@
 export type Skill = {
   name: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: "beginner" | "intermediate" | "advanced";
   yearsOfExperience: number;
 };
 
 export const skills: Skill[] = [
-    {
-        name: 'Kotlin',
-        level: 'intermediate',
-        yearsOfExperience: 8,
-    },
-]
+  {
+    name: "Kotlin",
+    level: "intermediate",
+    yearsOfExperience: 8,
+  },
+];

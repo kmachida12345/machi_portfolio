@@ -4,6 +4,6 @@ export type Contact = {
 };
 
 export const contact: Contact = {
-  email: 'kmachida12345@gmail.com',
-  address: 'Tokyo, Japan',
+  email: "kmachida12345@gmail.com",
+  address: "Tokyo, Japan",
 };
