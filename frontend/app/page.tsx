@@ -1,5 +1,3 @@
-import { works } from "@/data/works";
-import { WorkCard } from "@/components/WorkCard";
 import { AboutCard } from "@/components/AboutCard";
 import { about } from "@/data/about";
 import { ContactCard } from "@/components/ContactCard";
@@ -8,6 +6,7 @@ import { HeroCard } from "@/components/HeroCard";
 import { hero } from "@/data/hero";
 import { SkillCard } from "@/components/SkillCard";
 import { skills } from "@/data/skills";
+import { WorksSection } from "@/components/WorksSection";
 
 export default function Home() {
   return (
@@ -22,11 +21,7 @@ export default function Home() {
 
       <section className="mt-16">
         <h2 className="text-2xl font-semibold">Works</h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {works.map((w) => (
-            <WorkCard key={w.title} work={w} />
-          ))}
-        </div>
+        <WorksSection />
       </section>
       <section className="mt-16">
         <h2 className="text-2xl font-semibold">Skills</h2>

@@ -21,6 +21,7 @@ dependencies {
     implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
+    implementation(ktorLibs.server.cors)
     implementation(libs.logback.classic)
     implementation(ktorLibs.serialization.kotlinx.json)
     implementation(libs.exposed.core)

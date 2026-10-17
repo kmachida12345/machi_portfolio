@@ -2,7 +2,7 @@ export type Work = {
   title: string;
   description: string;
   tech: string[];
-  url?: string;
+  url: string | null;
 };
 
 export const works: Work[] = [
