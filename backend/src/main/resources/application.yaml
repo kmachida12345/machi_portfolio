@@ -5,9 +5,13 @@ ktor:
     modules:
       - io.github.kmachida12345.SerializationKt.configureSerialization
       - io.github.kmachida12345.DatabasesKt.configureDatabases
+      - io.github.kmachida12345.CorsKt.configureCors
       - io.github.kmachida12345.RoutingKt.configureRouting
 
 database:
   url: "$DB_URL:jdbc:postgresql://localhost:5432/portfolio"
   user: "$DB_USER:portfolio"
   password: "$POSTGRES_PASSWORD"
+
+cors:
+  allowedOrigins: "$CORS_ALLOWED_ORIGINS:http://localhost:3000"
