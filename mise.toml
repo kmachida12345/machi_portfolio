@@ -1,4 +1,5 @@
 [tools]
+java = "temurin-21"
 node = "lts"
 terraform = "1"
 
