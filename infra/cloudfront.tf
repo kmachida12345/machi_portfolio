@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   comment             = "machi-portfolio frontend"
   default_root_object = "index.html"
-  price_class         = "PriceClass_200"
+  web_acl_id = aws_wafv2_web_acl.frontend.arn
   http_version        = "http2and3"
 
   origin {
