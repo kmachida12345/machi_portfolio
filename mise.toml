@@ -1,2 +1,6 @@
 [tools]
 node = "lts"
+terraform = "1"
+
+[env]
+AWS_PROFILE = "portfolio"
