@@ -19,3 +19,11 @@ node_modules/
 # ルート直下のローカル専用ツール（Prettier を手動実行するためだけに入れたもの）
 /package.json
 /package-lock.json
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
