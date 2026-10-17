@@ -11,3 +11,11 @@
 !.vscode/extensions.json
 .idea/
 .claude/
+
+# 依存ライブラリ・ビルド成果物（どの階層でも除外）
+node_modules/
+.next/
+
+# ルート直下のローカル専用ツール（Prettier を手動実行するためだけに入れたもの）
+/package.json
+/package-lock.json
