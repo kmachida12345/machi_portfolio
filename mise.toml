@@ -5,3 +5,4 @@ terraform = "1"
 
 [env]
 AWS_PROFILE = "portfolio"
+_.file = "backend/.env"

@@ -23,6 +23,12 @@ dependencies {
     implementation(ktorLibs.server.netty)
     implementation(libs.logback.classic)
     implementation(ktorLibs.serialization.kotlinx.json)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.postgresql)
+    implementation(libs.postgresql)
+    implementation(libs.hikari)
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
