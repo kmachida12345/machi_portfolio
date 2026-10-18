@@ -25,3 +25,7 @@ output "ecr_repository_name" {
 output "lambda_function_name" {
   value = aws_lambda_function.api.function_name
 }
+
+output "route53_zone_name_servers" {
+  value = aws_route53_zone.main.name_servers
+}

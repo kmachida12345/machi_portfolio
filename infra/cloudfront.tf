@@ -30,6 +30,8 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
   web_acl_id          = aws_wafv2_web_acl.frontend.arn
   http_version        = "http2and3"
+  aliases             = [local.domain_name, "www.${local.domain_name}"]
+  is_ipv6_enabled     = true
 
   origin {
     origin_id                = "s3-frontend"
@@ -83,6 +85,38 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.main.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+}
+
+locals {
+  site_hostnames = [local.domain_name, "www.${local.domain_name}"]
+}
+
+resource "aws_route53_record" "site_ipv4" {
+  for_each = toset(local.site_hostnames)
+  zone_id  = aws_route53_zone.main.zone_id
+  name     = each.value
+  type     = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.frontend.domain_name
+    zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "site_ipv6" {
+  for_each = toset(local.site_hostnames)
+  zone_id  = aws_route53_zone.main.zone_id
+  name     = each.value
+  type     = "AAAA"
+
+  alias {
+    name                   = aws_cloudfront_distribution.frontend.domain_name
+    zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
+    evaluate_target_health = false
   }
 }

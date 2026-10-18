@@ -6,5 +6,6 @@ resource "aws_pricingplanmanager_subscription" "frontend" {
   resource_arns = [
     aws_cloudfront_distribution.frontend.arn,
     aws_wafv2_web_acl.frontend.arn,
+    aws_route53_zone.main.arn,
   ]
 }
