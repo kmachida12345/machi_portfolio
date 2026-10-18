@@ -13,5 +13,8 @@ fun Application.configureRouting() {
         get("/api/works") {
             call.respond(workRepository.findAll())
         }
+        get("/health") {
+            call.respondText("OK")
+        }
     }
 }

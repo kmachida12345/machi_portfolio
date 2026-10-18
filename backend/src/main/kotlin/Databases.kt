@@ -17,10 +17,13 @@ fun Application.configureDatabases() {
         maximumPoolSize = 5
     })
 
-    Flyway.configure()
-        .dataSource(dataSource)
-        .load()
-        .migrate()
+    val migrateOnStart = config.property("database.migrateOnStart").getString().toBoolean()
+    if (migrateOnStart) {
+        Flyway.configure()
+            .dataSource(dataSource)
+            .load()
+            .migrate()
+    }
 
     Database.connect(dataSource)
 

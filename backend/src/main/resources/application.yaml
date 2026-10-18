@@ -12,6 +12,7 @@ database:
   url: "$DB_URL:jdbc:postgresql://localhost:5432/portfolio"
   user: "$DB_USER:portfolio"
   password: "$POSTGRES_PASSWORD"
+  migrateOnStart: "$DB_MIGRATE_ON_START:true"
 
 cors:
   allowedOrigins: "$CORS_ALLOWED_ORIGINS:http://localhost:3000"
