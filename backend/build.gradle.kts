@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.flyway.postgresql)
     implementation(libs.postgresql)
     implementation(libs.hikari)
+    implementation(libs.aws.ssm)
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
