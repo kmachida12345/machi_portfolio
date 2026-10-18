@@ -79,6 +79,12 @@ data "aws_iam_policy_document" "github_deploy" {
     actions   = ["lambda:UpdateFunctionCode", "lambda:GetFunction", "lambda:GetFunctionConfiguration"]
     resources = [aws_lambda_function.api.arn]
   }
+
+  statement {
+    sid       = "ReadDbPasswordForMigration"
+    actions   = ["ssm:GetParameter"]
+    resources = [local.db_password_parameter_arn]
+  }
 }
 
 resource "aws_iam_role_policy" "github_deploy" {
