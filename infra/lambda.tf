@@ -71,3 +71,27 @@ resource "aws_lambda_function" "api" {
     ignore_changes = [image_uri]
   }
 }
+
+resource "aws_lambda_function_url" "api" {
+  provider           = aws.ap_southeast_1
+  function_name      = aws_lambda_function.api.function_name
+  authorization_type = "AWS_IAM"
+}
+
+resource "aws_lambda_permission" "cloudfront_invoke_url" {
+  provider      = aws.ap_southeast_1
+  statement_id  = "AllowCloudFrontInvokeFunctionUrl"
+  action        = "lambda:InvokeFunctionUrl"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "cloudfront.amazonaws.com"
+  source_arn    = aws_cloudfront_distribution.frontend.arn
+}
+
+resource "aws_lambda_permission" "cloudfront_invoke" {
+  provider      = aws.ap_southeast_1
+  statement_id  = "AllowCloudFrontInvokeFunction"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "cloudfront.amazonaws.com"
+  source_arn    = aws_cloudfront_distribution.frontend.arn
+}
