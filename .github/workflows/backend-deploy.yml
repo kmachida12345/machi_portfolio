@@ -41,6 +41,23 @@ jobs:
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 
+      - name: Run DB migrations
+        env:
+          FLYWAY_URL: ${{ vars.NEON_DIRECT_JDBC_URL }}
+          FLYWAY_USER: ${{ vars.NEON_DB_USER }}
+        run: |
+          FLYWAY_PASSWORD=$(aws ssm get-parameter \
+            --name /machi-portfolio/db-password \
+            --with-decryption \
+            --query Parameter.Value \
+            --output text)
+          echo "::add-mask::${FLYWAY_PASSWORD}"
+          export FLYWAY_PASSWORD
+          docker run --rm \
+            -e FLYWAY_URL -e FLYWAY_USER -e FLYWAY_PASSWORD \
+            -v "$PWD/src/main/resources/db/migration:/flyway/sql:ro" \
+            flyway/flyway:13.10.3 migrate
+
       - name: Update Lambda
         env:
           FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
