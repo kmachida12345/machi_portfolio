@@ -20,3 +20,15 @@ provider "aws" {
     }
   }
 }
+
+provider "aws" {
+  alias  = "ap_southeast_1"
+  region = "ap-southeast-1"
+
+  default_tags {
+    tags = {
+      Project   = "machi-portfolio"
+      ManagedBy = "terraform"
+    }
+  }
+}
