@@ -1,5 +1,8 @@
 locals {
-  github_repository = "kmachida12345/machi_portfolio"
+  github_owner         = "kmachida12345"
+  github_owner_id      = 38500329
+  github_repository    = "machi_portfolio"
+  github_repository_id = 1422965421
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
@@ -25,7 +28,9 @@ data "aws_iam_policy_document" "github_deploy_assume" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${local.github_repository}:ref:refs/heads/main"]
+      values = [
+        "repo:${local.github_owner}@${local.github_owner_id}/${local.github_repository}@${local.github_repository_id}:ref:refs/heads/main",
+      ]
     }
   }
 }
