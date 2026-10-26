@@ -59,6 +59,10 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods         = ["GET", "HEAD"]
     cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
     compress               = true
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.frontend_viewer_request.arn
+    }
   }
 
   ordered_cache_behavior {
@@ -119,4 +123,14 @@ resource "aws_route53_record" "site_ipv6" {
     zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
     evaluate_target_health = false
   }
+}
+
+resource "aws_cloudfront_function" "frontend_viewer_request" {
+  name    = "machi-portfolio-frontend-viewer-request"
+  runtime = "cloudfront-js-2.0"
+  comment = "Rewrite /path/ to /path/index.html and redirect www to apex"
+  publish = true
+  code = templatefile("${path.module}/functions/frontend-viewer-request.js.tftpl", {
+    domain = local.domain_name
+  })
 }
