@@ -19,3 +19,6 @@ export const socialLinks = {
   youtube: "https://www.youtube.com/@kmachida12345",
   instagram: "https://www.instagram.com/kmachida0928",
 };
+
+// MENTA のプランのページ（URL が決まったら差し替える）
+export const mentaUrl = "#";
