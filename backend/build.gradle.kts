@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.postgresql)
     implementation(libs.hikari)
     implementation(libs.aws.ssm)
+    implementation(libs.aws.sesv2)
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
