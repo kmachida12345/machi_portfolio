@@ -45,6 +45,7 @@ jobs:
     env:
       POSTGRES_PASSWORD: ci-only-password
       TURNSTILE_SECRET: 1x0000000000000000000000000000000AA
+      TURNSTILE_ALLOW_TESTING_KEY: true
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6

@@ -14,12 +14,18 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 
 @Serializable
+private data class SiteverifyMetadata(
+    @SerialName("result_with_testing_key") val resultWithTestingKey: Boolean = false,
+)
+
+@Serializable
 private data class SiteverifyResponse(
     val success: Boolean,
     @SerialName("error-codes") val errorCodes: List<String> = emptyList(),
+    val metadata: SiteverifyMetadata? = null,
 )
 
-class TurnstileVerifier(private val secret: String) {
+class TurnstileVerifier(private val secret: String, private val allowTestingKey: Boolean) {
     private val logger = LoggerFactory.getLogger(TurnstileVerifier::class.java)
 
     private val client = HttpClient(CIO) {
@@ -36,6 +42,10 @@ class TurnstileVerifier(private val secret: String) {
                     append("response", token)
                 },
             ).body<SiteverifyResponse>()
+            if (result.metadata?.resultWithTestingKey == true && !allowTestingKey) {
+                logger.error("Turnstile testing key is used in an environment that does not allow it")
+                return false
+            }
             if (!result.success) logger.info("Turnstile rejected: ${result.errorCodes}")
             result.success
         } catch (e: Exception) {
