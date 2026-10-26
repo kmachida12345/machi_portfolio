@@ -1,0 +1,32 @@
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+  var host = request.headers.host ? request.headers.host.value : "";
+
+  // www.kmachida.com に来たら、kmachida.com に転送する
+  if (host === "www.${domain}") {
+    return redirect("https://${domain}" + uri);
+  }
+
+  // /about/ → /about/index.html（S3 のファイル名に合わせる）
+  if (uri.endsWith("/")) {
+    request.uri = uri + "index.html";
+    return request;
+  }
+
+  // /about（末尾の / なし、拡張子なし）→ /about/ に転送して URL を 1 つにそろえる
+  if (uri.split("/").pop().indexOf(".") === -1) {
+    return redirect(uri + "/");
+  }
+
+  // /_next/xxx.js などのファイルはそのまま
+  return request;
+}
+
+function redirect(location) {
+  return {
+    statusCode: 301,
+    statusDescription: "Moved Permanently",
+    headers: { location: { value: location } },
+  };
+}
