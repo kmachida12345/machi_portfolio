@@ -75,3 +75,31 @@ resource "aws_cloudwatch_metric_alarm" "cloudfront_5xx_rate" {
   alarm_actions       = [aws_sns_topic.alerts_use1.arn]
   ok_actions          = [aws_sns_topic.alerts_use1.arn]
 }
+
+resource "aws_cloudwatch_log_metric_filter" "contact_limit_reached" {
+  provider       = aws.ap_southeast_1
+  name           = "contact-limit-reached"
+  log_group_name = aws_cloudwatch_log_group.api.name
+  pattern        = "\"Daily contact limit reached\""
+
+  metric_transformation {
+    name      = "ContactLimitReached"
+    namespace = "MachiPortfolio"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "contact_limit_reached" {
+  provider            = aws.ap_southeast_1
+  alarm_name          = "machi-portfolio-contact-limit-reached"
+  alarm_description   = "The daily contact form limit was reached (possible spam attack)"
+  namespace           = "MachiPortfolio"
+  metric_name         = "ContactLimitReached"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = [aws_sns_topic.alerts_apse1.arn]
+}

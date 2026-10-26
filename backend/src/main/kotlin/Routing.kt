@@ -5,6 +5,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 suspend fun Application.configureRouting() {
     val workRepository = WorkRepository()
@@ -17,8 +19,10 @@ suspend fun Application.configureRouting() {
         resolveSecret(
             plain = environment.config.propertyOrNull("turnstile.secret")?.getString(),
             ssmParameterName = environment.config.propertyOrNull("turnstile.secretSsmParameter")?.getString(),
-        )
+        ),
+        allowTestingKey = environment.config.propertyOrNull("turnstile.allowTestingKey")?.getString().toBoolean()
     )
+    val dailyLimit = environment.config.property("contact.dailyLimit").getString().toInt()
 
     routing {
         get("/") {
@@ -32,6 +36,17 @@ suspend fun Application.configureRouting() {
         }
         post("/api/contact") {
             val request = call.receive<ContactRequest>()
+
+            val since = OffsetDateTime.now(ZoneOffset.UTC).minusDays(1)
+            if (contactRepository.countSince(since) >= dailyLimit) {
+                call.application.log.warn("Daily contact limit reached")
+                call.respond(
+                    HttpStatusCode.TooManyRequests,
+                    ErrorResponse(listOf("お問い合わせが集中しています。時間をおいて再度お試しいただくか、SNS からご連絡ください")),
+                )
+                return@post
+            }
+
             if (!turnstile.verify(request.turnstileToken)) {
                 call.respond(
                     HttpStatusCode.BadRequest,

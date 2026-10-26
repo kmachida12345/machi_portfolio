@@ -1,8 +1,12 @@
 package io.github.kmachida12345
 
 import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.greaterEq
+import org.jetbrains.exposed.v1.javatime.timestampWithTimeZone
 import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
+import java.time.OffsetDateTime
 
 object ContactMessagesTable : Table("contact_messages") {
     val id = long("id").autoIncrement()
@@ -10,6 +14,7 @@ object ContactMessagesTable : Table("contact_messages") {
     val name = text("name")
     val email = text("email")
     val message = text("message")
+    val createdAt = timestampWithTimeZone("created_at")
 
     override val primaryKey = PrimaryKey(id)
 }
@@ -24,5 +29,10 @@ class ContactRepository {
                 it[message] = request.message.trim()
             }
         }
+    }
+    suspend fun countSince(since: OffsetDateTime): Long = suspendTransaction {
+        ContactMessagesTable.selectAll()
+            .where { ContactMessagesTable.createdAt greaterEq since }
+            .count()
     }
 }

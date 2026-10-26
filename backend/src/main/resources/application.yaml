@@ -23,7 +23,9 @@ cors:
 contact:
   mailFrom: "$?CONTACT_MAIL_FROM"
   mailTo: "$?CONTACT_MAIL_TO"
+  dailyLimit: "$CONTACT_DAILY_LIMIT:50"
 
 turnstile:
   secret: "$?TURNSTILE_SECRET"
   secretSsmParameter: "$?TURNSTILE_SECRET_SSM_PARAMETER"
+  allowTestingKey: "$TURNSTILE_ALLOW_TESTING_KEY:false"

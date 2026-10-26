@@ -17,6 +17,7 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" 
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 aws-ssm = { module = "aws.sdk.kotlin:ssm", version.ref = "aws-sdk-kotlin" }
 aws-sesv2 = { module = "aws.sdk.kotlin:sesv2", version.ref = "aws-sdk-kotlin" }
+exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
