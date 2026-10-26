@@ -24,6 +24,8 @@ dependencies {
     implementation(ktorLibs.server.cors)
     implementation(libs.logback.classic)
     implementation(ktorLibs.serialization.kotlinx.json)
+    implementation(ktorLibs.server.requestValidation)
+    implementation(ktorLibs.server.statusPages)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.core)
