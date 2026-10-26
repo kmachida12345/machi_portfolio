@@ -6,6 +6,7 @@ ktor:
       - io.github.kmachida12345.SerializationKt.configureSerialization
       - io.github.kmachida12345.DatabasesKt.configureDatabases
       - io.github.kmachida12345.CorsKt.configureCors
+      - io.github.kmachida12345.ValidationKt.configureValidation
       - io.github.kmachida12345.RoutingKt.configureRouting
 
 database:
