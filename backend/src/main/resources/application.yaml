@@ -19,3 +19,7 @@ database:
 
 cors:
   allowedOrigins: "$CORS_ALLOWED_ORIGINS:http://localhost:3000"
+
+contact:
+  mailFrom: "$?CONTACT_MAIL_FROM"
+  mailTo: "$?CONTACT_MAIL_TO"

@@ -37,6 +37,13 @@ data "aws_iam_policy_document" "api_lambda_ssm" {
     actions   = ["ssm:GetParameter"]
     resources = [local.db_password_parameter_arn]
   }
+  statement {
+    actions = ["ses:SendEmail"]
+    resources = [
+      aws_sesv2_email_identity.domain.arn,
+      aws_sesv2_email_identity.notify_to.arn,
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "api_lambda_ssm" {
@@ -62,6 +69,8 @@ resource "aws_lambda_function" "api" {
       DB_PASSWORD_SSM_PARAMETER = local.db_password_parameter
       DB_MAX_POOL_SIZE          = "1"
       DB_MIGRATE_ON_START       = "false"
+      CONTACT_MAIL_FROM         = "noreply@${local.domain_name}"
+      CONTACT_MAIL_TO           = var.alert_email
     }
   }
 
@@ -70,6 +79,7 @@ resource "aws_lambda_function" "api" {
   lifecycle {
     ignore_changes = [image_uri]
   }
+
 }
 
 resource "aws_lambda_function_url" "api" {
