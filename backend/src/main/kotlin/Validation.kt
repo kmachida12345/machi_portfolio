@@ -16,6 +16,7 @@ fun Application.configureValidation() {
                 if (request.name.isBlank() || request.name.length > 100) add("お名前は 1〜100 文字で入力してください")
                 if (!emailRegex.matches(request.email) || request.email.length > 254) add("メールアドレスの形式が正しくありません")
                 if (request.message.isBlank() || request.message.length > 5000) add("内容は 1〜5000 文字で入力してください")
+                if (request.turnstileToken.isBlank() || request.turnstileToken.length > 2048) add("ボット確認のトークンが不正です")
             }
             if (errors.isEmpty()) ValidationResult.Valid else ValidationResult.Invalid(errors)
         }

@@ -18,7 +18,7 @@ class ContactTest {
             contentType(ContentType.Application.Json)
             setBody(
                 """
-                    {"kind":"music","name":"テスト","email":"test@example.com","message":"レッスンについて教えてください"}
+                    {"kind":"music","name":"テスト","email":"test@example.com","message":"レッスンについて教えてください,"turnstileToken":"XXXX.DUMMY.TOKEN.XXXX""}
             """.trimIndent()
             )
         }
@@ -34,7 +34,7 @@ class ContactTest {
             contentType(ContentType.Application.Json)
             setBody(
                 """
-                    {"kind":"music","name":"テスト","email": "not-an-email","message":"レッスンについて教えてください"}
+                    {"kind":"music","name":"テスト","email":"not-an-email","message":"レッスンについて教えてください","turnstileToken":"XXXX.DUMMY.TOKEN.XXXX"}
             """.trimIndent()
             )
         }

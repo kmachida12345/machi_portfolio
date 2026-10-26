@@ -6,12 +6,18 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting() {
+suspend fun Application.configureRouting() {
     val workRepository = WorkRepository()
     val contactRepository = ContactRepository()
     val notifier = ContactNotifier(
         from = environment.config.propertyOrNull("contact.mailFrom")?.getString(),
         to = environment.config.propertyOrNull("contact.mailTo")?.getString(),
+    )
+    val turnstile = TurnstileVerifier(
+        resolveSecret(
+            plain = environment.config.propertyOrNull("turnstile.secret")?.getString(),
+            ssmParameterName = environment.config.propertyOrNull("turnstile.secretSsmParameter")?.getString(),
+        )
     )
 
     routing {
@@ -26,6 +32,13 @@ fun Application.configureRouting() {
         }
         post("/api/contact") {
             val request = call.receive<ContactRequest>()
+            if (!turnstile.verify(request.turnstileToken)) {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ErrorResponse(listOf("ボット確認に失敗しました。ページを再読み込みして、もう一度お試しください")),
+                )
+                return@post
+            }
             contactRepository.save(request)
             try {
                 notifier.notify(request)

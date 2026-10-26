@@ -23,3 +23,7 @@ cors:
 contact:
   mailFrom: "$?CONTACT_MAIL_FROM"
   mailTo: "$?CONTACT_MAIL_TO"
+
+turnstile:
+  secret: "$?TURNSTILE_SECRET"
+  secretSsmParameter: "$?TURNSTILE_SECRET_SSM_PARAMETER"

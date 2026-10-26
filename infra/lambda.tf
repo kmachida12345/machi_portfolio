@@ -1,9 +1,11 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-  api_function_name         = "machi-portfolio-api"
-  db_password_parameter     = "/machi-portfolio/db-password"
-  db_password_parameter_arn = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.db_password_parameter}"
+  api_function_name              = "machi-portfolio-api"
+  db_password_parameter          = "/machi-portfolio/db-password"
+  db_password_parameter_arn      = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.db_password_parameter}"
+  turnstile_secret_parameter     = "/machi-portfolio/turnstile-secret"
+  turnstile_secret_parameter_arn = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.turnstile_secret_parameter}"
 }
 
 resource "aws_cloudwatch_log_group" "api" {
@@ -34,8 +36,11 @@ resource "aws_iam_role_policy_attachment" "api_lambda_logs" {
 
 data "aws_iam_policy_document" "api_lambda_ssm" {
   statement {
-    actions   = ["ssm:GetParameter"]
-    resources = [local.db_password_parameter_arn]
+    actions = ["ssm:GetParameter"]
+    resources = [
+      local.db_password_parameter_arn,
+      local.turnstile_secret_parameter_arn,
+    ]
   }
   statement {
     actions = ["ses:SendEmail"]
@@ -64,13 +69,14 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      DB_URL                    = var.db_url
-      DB_USER                   = var.db_user
-      DB_PASSWORD_SSM_PARAMETER = local.db_password_parameter
-      DB_MAX_POOL_SIZE          = "1"
-      DB_MIGRATE_ON_START       = "false"
-      CONTACT_MAIL_FROM         = "noreply@${local.domain_name}"
-      CONTACT_MAIL_TO           = var.alert_email
+      DB_URL                         = var.db_url
+      DB_USER                        = var.db_user
+      DB_PASSWORD_SSM_PARAMETER      = local.db_password_parameter
+      DB_MAX_POOL_SIZE               = "1"
+      DB_MIGRATE_ON_START            = "false"
+      CONTACT_MAIL_FROM              = "noreply@${local.domain_name}"
+      CONTACT_MAIL_TO                = var.alert_email
+      TURNSTILE_SECRET_SSM_PARAMETER = local.turnstile_secret_parameter
     }
   }
 
