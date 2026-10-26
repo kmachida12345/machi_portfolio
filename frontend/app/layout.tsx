@@ -24,7 +24,8 @@ export const metadata: Metadata = {
     default: "町田康平 (Kohei Machida)",
     template: "%s | kmachida.com",
   },
-  description: "Android エンジニア / アイリッシュフルート奏者、町田康平の個人サイト",
+  description:
+    "Android エンジニア / アイリッシュフルート奏者、町田康平の個人サイト",
   openGraph: {
     type: "website",
     siteName: "kmachida.com",
@@ -34,7 +35,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ja" className={`${zenKaku.variable} ${jetbrainsMono.variable} antialiased`}>
+    <html
+      lang="ja"
+      className={`${zenKaku.variable} ${jetbrainsMono.variable} antialiased`}
+    >
       <body className="flex min-h-screen flex-col bg-bg font-sans text-fg">
         <Header />
         <main className="flex-1">{children}</main>
