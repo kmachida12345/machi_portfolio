@@ -67,6 +67,7 @@ resource "aws_lambda_function" "api" {
   memory_size   = 1024
   timeout       = 15
 
+
   environment {
     variables = {
       DB_URL                         = var.db_url
@@ -77,6 +78,7 @@ resource "aws_lambda_function" "api" {
       CONTACT_MAIL_FROM              = "noreply@${local.domain_name}"
       CONTACT_MAIL_TO                = var.alert_email
       TURNSTILE_SECRET_SSM_PARAMETER = local.turnstile_secret_parameter
+      CORS_ALLOWED_ORIGINS           = "https://${local.domain_name}"
     }
   }
 
