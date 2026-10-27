@@ -20,7 +20,7 @@ export default function ContactPage() {
           お問い合わせ
         </h1>
         <p className="text-[15px] leading-[1.9] text-muted">
-          演奏のご依頼、アプリ開発のご相談、そのほかのご連絡もこちらからどうぞ。[○日以内]にお返事します。
+          演奏のご依頼、アプリ開発のご相談、そのほかのご連絡もこちらからどうぞ。1日以内にお返事します。
         </p>
         <p className="rounded-lg bg-surface p-4 text-sm leading-[1.8] text-muted">
           Android 開発のメンタリングは、
