@@ -6,6 +6,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -17,9 +18,15 @@ class ContactTest {
         val response = client.post("/api/contact") {
             contentType(ContentType.Application.Json)
             setBody(
-                """
-                    {"kind":"music","name":"テスト","email":"test@example.com","message":"レッスンについて教えてください,"turnstileToken":"XXXX.DUMMY.TOKEN.XXXX""}
-            """.trimIndent()
+                Json.encodeToString(
+                    ContactRequest(
+                        kind = ContactKind.MUSIC,
+                        name = "テスト",
+                        email = "test@example.com",
+                        message = "レッスンについて教えてください",
+                        turnstileToken = "XXXX.DUMMY.TOKEN.XXXX",
+                    )
+                )
             )
         }
 
@@ -33,9 +40,15 @@ class ContactTest {
         val response = client.post("/api/contact") {
             contentType(ContentType.Application.Json)
             setBody(
-                """
-                    {"kind":"music","name":"テスト","email":"not-an-email","message":"レッスンについて教えてください","turnstileToken":"XXXX.DUMMY.TOKEN.XXXX"}
-            """.trimIndent()
+                Json.encodeToString(
+                    ContactRequest(
+                        kind = ContactKind.MUSIC,
+                        name = "テスト",
+                        email = "not-an-email",
+                        message = "レッスンについて教えてください",
+                        turnstileToken = "XXXX.DUMMY.TOKEN.XXXX",
+                    )
+                )
             )
         }
 
