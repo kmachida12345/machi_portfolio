@@ -18,6 +18,10 @@ output "github_deploy_role_arn" {
   value = aws_iam_role.github_deploy.arn
 }
 
+output "github_frontend_deploy_role_arn" {
+  value = aws_iam_role.github_frontend_deploy.arn
+}
+
 output "ecr_repository_name" {
   value = aws_ecr_repository.api.name
 }

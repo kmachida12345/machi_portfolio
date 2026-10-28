@@ -16,7 +16,7 @@ function handler(event) {
 
   // /about（末尾の / なし、拡張子なし）→ /about/ に転送して URL を 1 つにそろえる
   if (uri.split("/").pop().indexOf(".") === -1) {
-    return redirect(uri + "/");
+    return redirect((uri + "/").replace(/^[\/\\\t\n\r]+/, "/"));
   }
 
   // /_next/xxx.js などのファイルはそのまま

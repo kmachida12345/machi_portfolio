@@ -14,7 +14,8 @@ fun Application.configureValidation() {
         validate<ContactRequest> { request ->
             val errors = buildList {
                 if (request.name.isBlank() || request.name.length > 100) add("お名前は 1〜100 文字で入力してください")
-                if (!emailRegex.matches(request.email) || request.email.length > 254) add("メールアドレスの形式が正しくありません")
+                // 長さを先に判定する。正規表現は長い入力でバックトラックが O(N^2) になるため、254 文字を超える入力は渡さない
+                if (request.email.length > 254 || !emailRegex.matches(request.email)) add("メールアドレスの形式が正しくありません")
                 if (request.message.isBlank() || request.message.length > 5000) add("内容は 1〜5000 文字で入力してください")
                 if (request.turnstileToken.isBlank() || request.turnstileToken.length > 2048) add("ボット確認のトークンが不正です")
             }

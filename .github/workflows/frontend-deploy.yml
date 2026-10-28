@@ -8,16 +8,17 @@ on:
       - ".github/workflows/frontend-deploy.yml"
   workflow_dispatch:
 
+# npm の依存パッケージやビルドが動くジョブでは OIDC トークンを発行できないようにする
+# id-token: write は、ビルド結果をアップロードするだけの deploy ジョブにだけ付ける
 permissions:
   contents: read
-  id-token: write
 
 concurrency:
   group: deploy-frontend
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,9 +36,32 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+
+      # aws s3 sync と同じ中身を渡すため、ドットで始まるファイルも含める
+      - uses: actions/upload-artifact@v7
+        with:
+          name: frontend-out
+          path: frontend/out/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # npm やビルドは動かさず、build ジョブの成果物だけを使う
+      - uses: actions/download-artifact@v8
+        with:
+          name: frontend-out
+          path: out
+
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_FRONTEND_DEPLOY_ROLE_ARN }}
           aws-region: ap-northeast-1
 
       - name: Upload to S3
