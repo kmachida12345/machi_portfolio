@@ -3,6 +3,9 @@ locals {
   github_owner_id      = 38500329
   github_repository    = "machi_portfolio"
   github_repository_id = 1422965421
+
+  # main ブランチで動いたワークフローの OIDC トークンの sub
+  github_main_branch_sub = "repo:${local.github_owner}@${local.github_owner_id}/${local.github_repository}@${local.github_repository_id}:ref:refs/heads/main"
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
@@ -10,6 +13,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   client_id_list = ["sts.amazonaws.com"]
 }
 
+# バックエンドのデプロイ用ロール（ECR・Lambda・DB パスワード）
 data "aws_iam_policy_document" "github_deploy_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -29,8 +33,16 @@ data "aws_iam_policy_document" "github_deploy_assume" {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
-        "repo:${local.github_owner}@${local.github_owner_id}/${local.github_repository}@${local.github_repository_id}:ref:refs/heads/main",
+        local.github_main_branch_sub,
       ]
+    }
+
+    # ワークフロー名でも絞って、フロントエンドなど他のワークフローからは使えないようにする
+    # 値は .github/workflows/backend-deploy.yml の name と揃える
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:workflow"
+      values   = ["Deploy backend"]
     }
   }
 }
@@ -41,21 +53,6 @@ resource "aws_iam_role" "github_deploy" {
 }
 
 data "aws_iam_policy_document" "github_deploy" {
-  statement {
-    sid       = "FrontendBucketList"
-    actions   = ["s3:ListBucket"]
-    resources = [aws_s3_bucket.frontend.arn]
-  }
-  statement {
-    sid       = "FrontendBucketWrite"
-    actions   = ["s3:PutObject", "s3:DeleteObject"]
-    resources = ["${aws_s3_bucket.frontend.arn}/*"]
-  }
-  statement {
-    sid       = "InvalidateCache"
-    actions   = ["cloudfront:CreateInvalidation"]
-    resources = [aws_cloudfront_distribution.frontend.arn]
-  }
   statement {
     sid       = "EcrLogin"
     actions   = ["ecr:GetAuthorizationToken"]
@@ -91,4 +88,67 @@ resource "aws_iam_role_policy" "github_deploy" {
   name   = "deploy"
   role   = aws_iam_role.github_deploy.id
   policy = data.aws_iam_policy_document.github_deploy.json
+}
+
+# フロントエンドのデプロイ用ロール（S3 へのアップロードと CloudFront のキャッシュ削除だけ）
+# npm の依存パッケージなどが DB パスワードや Lambda に触れないよう、バックエンドとは分ける
+data "aws_iam_policy_document" "github_frontend_deploy_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values = [
+        local.github_main_branch_sub,
+      ]
+    }
+
+    # 値は .github/workflows/frontend-deploy.yml の name と揃える
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:workflow"
+      values   = ["Deploy frontend"]
+    }
+  }
+}
+
+resource "aws_iam_role" "github_frontend_deploy" {
+  name               = "machi-portfolio-github-frontend-deploy"
+  assume_role_policy = data.aws_iam_policy_document.github_frontend_deploy_assume.json
+}
+
+data "aws_iam_policy_document" "github_frontend_deploy" {
+  statement {
+    sid       = "FrontendBucketList"
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.frontend.arn]
+  }
+  statement {
+    sid       = "FrontendBucketWrite"
+    actions   = ["s3:PutObject", "s3:DeleteObject"]
+    resources = ["${aws_s3_bucket.frontend.arn}/*"]
+  }
+  statement {
+    sid       = "InvalidateCache"
+    actions   = ["cloudfront:CreateInvalidation"]
+    resources = [aws_cloudfront_distribution.frontend.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "github_frontend_deploy" {
+  name   = "deploy"
+  role   = aws_iam_role.github_frontend_deploy.id
+  policy = data.aws_iam_policy_document.github_frontend_deploy.json
 }
