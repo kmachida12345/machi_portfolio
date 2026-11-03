@@ -3,7 +3,7 @@ package io.github.kmachida12345
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.javatime.timestampWithTimeZone
-import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.insertReturning
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import java.sql.Connection
@@ -24,20 +24,20 @@ object ContactMessagesTable : Table("contact_messages") {
 }
 
 class ContactRepository {
-    suspend fun saveIfUnderLimit(request: ContactRequest, since: OffsetDateTime, limit: Int): Boolean =
+    suspend fun saveIfUnderLimit(request: ContactRequest, since: OffsetDateTime, limit: Int): Long? =
         suspendTransaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
             exec("SELECT pg_advisory_xact_lock($CONTACT_LIMIT_LOCK_KEY)")
             val count = ContactMessagesTable.selectAll()
                 .where { ContactMessagesTable.createdAt greaterEq since }
                 .count()
-            if (count >= limit) return@suspendTransaction false
-            ContactMessagesTable.insert {
+            if (count >= limit) return@suspendTransaction null
+            
+            ContactMessagesTable.insertReturning(listOf(ContactMessagesTable.id)) {
                 it[kind] = request.kind.name.lowercase()
                 it[name] = request.name.trim()
                 it[email] = request.email.trim()
                 it[message] = request.message.trim()
-            }
-            true
+            }.single()[ContactMessagesTable.id]
         }
     suspend fun countSince(since: OffsetDateTime): Long = suspendTransaction {
         ContactMessagesTable.selectAll()

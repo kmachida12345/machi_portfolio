@@ -113,7 +113,7 @@ class ContactTest {
             List(5) { async(Dispatchers.IO) { repository.saveIfUnderLimit(request, since, limit) } }.awaitAll()
         }
 
-        assertEquals(1, results.count { it })
+        assertEquals(1, results.count { it != null })
         assertEquals(limit.toLong(), repository.countSince(since))
     }
 
