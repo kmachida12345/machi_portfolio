@@ -1,12 +1,12 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-  api_function_name              = "machi-portfolio-api"
-  db_password_parameter          = "/machi-portfolio/db-app-password"
+  api_function_name               = "machi-portfolio-api"
+  db_password_parameter           = "/machi-portfolio/db-app-password"
   db_owner_password_parameter_arn = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter/machi-portfolio/db-password"
-  db_password_parameter_arn      = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.db_password_parameter}"
-  turnstile_secret_parameter     = "/machi-portfolio/turnstile-secret"
-  turnstile_secret_parameter_arn = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.turnstile_secret_parameter}"
+  db_password_parameter_arn       = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.db_password_parameter}"
+  turnstile_secret_parameter      = "/machi-portfolio/turnstile-secret"
+  turnstile_secret_parameter_arn  = "arn:aws:ssm:ap-southeast-1:${data.aws_caller_identity.current.account_id}:parameter${local.turnstile_secret_parameter}"
 }
 
 resource "aws_cloudwatch_log_group" "api" {
