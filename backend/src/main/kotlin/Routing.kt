@@ -52,7 +52,7 @@ suspend fun Application.configureRouting() {
                 return@post
             }
             // 事前チェックの後に同時リクエストが保存している可能性があるので、保存と同じトランザクションで上限を再確認する
-            if (!contactRepository.saveIfUnderLimit(request, since, dailyLimit)) {
+            if (contactRepository.saveIfUnderLimit(request, since, dailyLimit) == null) {
                 call.respondDailyLimitReached()
                 return@post
             }
