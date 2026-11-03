@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "github_deploy" {
   statement {
     sid       = "ReadDbPasswordForMigration"
     actions   = ["ssm:GetParameter"]
-    resources = [local.db_password_parameter_arn]
+    resources = [local.db_owner_password_parameter_arn]
   }
 }
 
